@@ -30,13 +30,13 @@ public class Patient {
     @NotBlank
     private String dni;
 
-    @NotBlank
+    @NotNull
     private Integer age;
 
     @NotBlank
     private String email;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "specialist_id", nullable = false)
     private Specialist specialist;
 

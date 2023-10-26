@@ -2,33 +2,35 @@ package com.pteriscope.pteriscopebackend.patient.api;
 
 import com.pteriscope.pteriscopebackend.patient.domain.model.entity.Patient;
 import com.pteriscope.pteriscopebackend.patient.domain.serivces.PatientService;
+import com.pteriscope.pteriscopebackend.patient.dto.PatientResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/patients")
+@RequestMapping("/api")
+@CrossOrigin
 public class PatientController {
 
     @Autowired
     private PatientService patientService;
 
-    @PostMapping
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient, @RequestParam Long specialistId) {
+    @PostMapping("/specialists/createPatient/{specialistId}")
+    public ResponseEntity<PatientResponse> createPatient(@RequestBody Patient patient, @PathVariable Long specialistId) {
         return ResponseEntity.ok(patientService.createPatient(specialistId, patient));
     }
 
-    @GetMapping("/{patientId}")
-    public ResponseEntity<Patient> getPatient(@PathVariable Long patientId) {
+    @GetMapping("/patients/get/{patientId}")
+    public ResponseEntity<PatientResponse> getPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(patientService.getPatient(patientId));
     }
 
-    @PutMapping("/{patientId}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long patientId, @RequestBody Patient updatedPatient) {
+    @PutMapping("/patients/update/{patientId}")
+    public ResponseEntity<PatientResponse> updatePatient(@PathVariable Long patientId, @RequestBody Patient updatedPatient) {
         return ResponseEntity.ok(patientService.updatePatient(patientId, updatedPatient));
     }
 
-    @DeleteMapping("/{patientId}")
+    @DeleteMapping("/patients/delete/{patientId}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long patientId) {
         patientService.deletePatient(patientId);
         return ResponseEntity.ok().build();

@@ -7,5 +7,6 @@ import java.util.Optional;
 
 @Repository
 public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
-    Specialist findByDni(String dni);
+    Optional<Specialist> findByDni(String dni);
+    boolean existsByDni(String dni);
 }

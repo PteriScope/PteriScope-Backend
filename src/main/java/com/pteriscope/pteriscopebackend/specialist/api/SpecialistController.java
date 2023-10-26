@@ -1,34 +1,40 @@
 package com.pteriscope.pteriscopebackend.specialist.api;
 
+import com.pteriscope.pteriscopebackend.security.dto.JwtDto;
+import com.pteriscope.pteriscopebackend.security.dto.LoginUser;
+import com.pteriscope.pteriscopebackend.security.dto.RegisterUser;
 import com.pteriscope.pteriscopebackend.specialist.domain.model.entity.Specialist;
 import com.pteriscope.pteriscopebackend.specialist.domain.services.SpecialistService;
+import com.pteriscope.pteriscopebackend.specialist.dto.SpecialistResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/specialists")
+@CrossOrigin
 public class SpecialistController {
     @Autowired
     private SpecialistService specialistService;
 
     @PostMapping("/register")
-    public ResponseEntity<Specialist> registerSpecialist(@RequestBody Specialist specialist) {
-        return ResponseEntity.ok(specialistService.registerSpecialist(specialist));
+    public ResponseEntity<String> registerSpecialist(@RequestBody RegisterUser newUser) {
+        return ResponseEntity.ok(specialistService.registerSpecialist(newUser));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Specialist> login(@RequestBody String dni, @RequestBody String password) {
-        return ResponseEntity.ok(specialistService.login(dni, password));
+    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUser loginUser) {
+        return ResponseEntity.ok(specialistService.login(loginUser));
     }
 
-    @GetMapping("/{specialistId}")
-    public ResponseEntity<Specialist> getSpecialist(@PathVariable Long specialistId) {
+    @GetMapping("/get/{specialistId}")
+    public ResponseEntity<SpecialistResponse> getSpecialist(@PathVariable Long specialistId) {
         return ResponseEntity.ok(specialistService.getSpecialist(specialistId));
     }
 
-    @PutMapping("/{specialistId}")
-    public ResponseEntity<Specialist> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
+    @PutMapping("/update/{specialistId}")
+    public ResponseEntity<SpecialistResponse> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
         return ResponseEntity.ok(specialistService.updateSpecialist(updatedSpecialist, specialistId));
     }
 }

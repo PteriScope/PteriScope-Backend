@@ -7,6 +7,7 @@ import com.pteriscope.pteriscopebackend.review.domain.model.entity.Review;
 import com.pteriscope.pteriscopebackend.review.domain.persistence.ReviewRepository;
 import com.pteriscope.pteriscopebackend.review.domain.services.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,7 +39,7 @@ public class ReviewServiceImpl implements ReviewService {
             return reviewRepository.save(review);
         }
         else{
-            throw new CustomException("Patient with ID " + patientId + " does not exist");
+            throw new CustomException(HttpStatus.BAD_REQUEST, "Patient with ID " + patientId + " does not exist");
         }
     }
 }
