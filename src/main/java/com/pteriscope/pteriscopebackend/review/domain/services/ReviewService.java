@@ -1,7 +1,8 @@
 package com.pteriscope.pteriscopebackend.review.domain.services;
 
-import com.pteriscope.pteriscopebackend.review.domain.model.entity.Review;
+import com.pteriscope.pteriscopebackend.review.dto.ReviewResponse;
 
 public interface ReviewService {
-    public Review createReview(Long patientId, String imageBase64);
+    public ReviewResponse createReview(Long patientId, String imageBase64) throws Exception;
+    public ReviewResponse getReview(Long id);
 }

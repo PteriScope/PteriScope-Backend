@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 90
+    Environment:
+      Variables:
+        POWERTOOLS_SERVICE_NAME: PteriScopeApi
+        SECRET_NAME: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscope
+
+Resources:
+  ProductApiFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: .
+      Handler: com.pteriscope.pteriscopebackend.lambda.StreamLambdaHandler::handleRequest
+      Runtime: java17
+      AutoPublishAlias: production
+      SnapStart:
+        ApplyOn: PublishedVersions
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-032c65f89f6ac410f
+        SubnetIds:
+          - subnet-0eecffe9d60c1ef35
+          - subnet-01891e703d2b2670e
+          - subnet-039f3f02681f08a51
+          - subnet-0d043567ba8ec3dc2
+          - subnet-05f0f515341aa5711
+          - subnet-08e489cb638338635
+      Architectures:
+        - x86_64
+      MemorySize: 2048
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1 # More info about tiered compilation https://aws.amazon.com/blogs/compute/optimizing-aws-lambda-function-performance-for-java/
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscope
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
