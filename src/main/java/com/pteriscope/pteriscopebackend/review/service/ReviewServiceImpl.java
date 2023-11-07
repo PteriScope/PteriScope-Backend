@@ -9,6 +9,7 @@ import com.pteriscope.pteriscopebackend.review.domain.persistence.ReviewReposito
 import com.pteriscope.pteriscopebackend.review.domain.services.ReviewService;
 import com.pteriscope.pteriscopebackend.review.dto.ReviewResponse;
 import com.pteriscope.pteriscopebackend.util.PterygiumClass;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
@@ -35,6 +37,7 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewResponse createReview(Long patientId, String imageBase64) throws Exception {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if (patient.isPresent()) {
+            log.info(String.format("Solicitud llegada al servicio con request: %s, y patientId: %s", imageBase64, patientId));
             Review review = new Review();
             review.setImageBase64(imageBase64);
             review.setPatient(patient.get());
@@ -54,16 +57,23 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     private String analyzeImage(String base64Image) throws Exception {
-
+        log.info("==================================================================");
+        log.info(String.format("Solicitud llegada al analyzeImage con base64Image: %s", base64Image));
         // Crear la solicitud HTTP
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(new JSONObject().put("image", base64Image).toString(), headers);
 
+        log.info("==================================================================");
+        log.info(String.format("request creado %s", request));
         // Realizar la solicitud POST a la API Gateway
         RestTemplate restTemplate = new RestTemplate();
+        log.info("==================================================================");
+        log.info(String.format("apiGatewayUrl: %s", apiGatewayUrl));
         ResponseEntity<String> response = restTemplate.postForEntity(apiGatewayUrl + "/predict", request, String.class);
 
+        log.info("==================================================================");
+        log.info(String.format("response: %s", response));
         // Procesar la respuesta
         if (response.getStatusCode() == HttpStatus.OK) {
             JSONObject responseBody = new JSONObject(response.getBody());
@@ -85,9 +95,13 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public ReviewResponse getReview(Long reviewId) {
+        log.info("==================================================================");
+        log.info(String.format("reviewId: %s", reviewId));
         Review storedPatient = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
 
+        log.info("==================================================================");
+        log.info(String.format("Response: %s", reviewId));
         return mapReview(storedPatient);
     }
 

@@ -6,11 +6,11 @@ Globals:
     Timeout: 90
     Environment:
       Variables:
-        POWERTOOLS_SERVICE_NAME: PteriScopeApi
-        SECRET_NAME: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscope
+        POWERTOOLS_SERVICE_NAME: PteriScopeApiv2
+        SECRET_NAME: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscopev2
 
 Resources:
-  ProductApiFunction:
+  ProductFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: .
@@ -37,9 +37,9 @@ Resources:
           JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1 # More info about tiered compilation https://aws.amazon.com/blogs/compute/optimizing-aws-lambda-function-performance-for-java/
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
-            SecretArn: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscope
+            SecretArn: !Sub arn:aws:secretsmanager:us-east-1:095498312899:secret:pteriscopev2
       Events:
-        HelloWorld:
+        Gateway:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
             Path: /{proxy+}
