@@ -52,6 +52,11 @@ public class ReviewServiceImpl implements ReviewService {
             review.setReviewResult(prediction);
             Review savedReview = reviewRepository.save(review);
 
+            // Update patient last review info
+            patient.get().setLastReviewResult(review.getReviewResult());
+            patient.get().setLastReviewDate(review.getReviewDate());
+            patientRepository.save(patient.get());
+
             return mapReview(savedReview);
         }
         else{

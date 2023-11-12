@@ -64,6 +64,8 @@ public class PatientServiceImpl implements PatientService {
         response.setAge(patient.getAge());
         response.setEmail(patient.getEmail());
         response.setSpecialistId(patient.getSpecialist().getId());
+        response.setLastReviewDate(patient.getLastReviewDate());
+        response.setLastReviewResult(patient.getLastReviewResult());
         return response;
     }
 

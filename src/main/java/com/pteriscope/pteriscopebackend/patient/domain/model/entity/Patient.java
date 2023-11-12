@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -35,6 +36,9 @@ public class Patient {
 
     @NotBlank
     private String email;
+
+    private String lastReviewResult;
+    private LocalDateTime lastReviewDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "specialist_id", nullable = false)

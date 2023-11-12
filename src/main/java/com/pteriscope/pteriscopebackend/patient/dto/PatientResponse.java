@@ -1,5 +1,7 @@
 package com.pteriscope.pteriscopebackend.patient.dto;
 
+import java.time.LocalDateTime;
+
 public class PatientResponse {
     private Long id;
     private String firstName;
@@ -7,7 +9,25 @@ public class PatientResponse {
     private String dni;
     private Integer age;
     private String email;
+    private String lastReviewResult;
+    private LocalDateTime lastReviewDate;
     private Long specialistId;
+
+    public String getLastReviewResult() {
+        return lastReviewResult;
+    }
+
+    public void setLastReviewResult(String lastReviewResult) {
+        this.lastReviewResult = lastReviewResult;
+    }
+
+    public LocalDateTime getLastReviewDate() {
+        return lastReviewDate;
+    }
+
+    public void setLastReviewDate(LocalDateTime lastReviewDate) {
+        this.lastReviewDate = lastReviewDate;
+    }
 
     public Long getId() {
         return id;
