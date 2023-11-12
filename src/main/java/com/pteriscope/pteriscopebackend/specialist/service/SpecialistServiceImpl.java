@@ -70,11 +70,13 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public JwtDto login(LoginUser loginUser){
+        Specialist specialist = specialistRepository.findByDni(loginUser.getDNI())
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getDNI(), loginUser.getPassword()));
         //SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateToken(authentication);
-        return new JwtDto(jwt);
+        return new JwtDto(jwt, specialist.getId());
     }
 
     @Override

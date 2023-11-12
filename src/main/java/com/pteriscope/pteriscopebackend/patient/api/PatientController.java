@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api")
 @CrossOrigin
@@ -23,6 +25,11 @@ public class PatientController {
     @GetMapping("/patients/get/{patientId}")
     public ResponseEntity<PatientResponse> getPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(patientService.getPatient(patientId));
+    }
+
+    @GetMapping("/specialists/{specialistId}/patients")
+    public ResponseEntity<List<PatientResponse>> getPatientFromSpecialist(@PathVariable Long specialistId) {
+        return ResponseEntity.ok(patientService.getPatientFromSpecialist(specialistId));
     }
 
     @PutMapping("/patients/update/{patientId}")

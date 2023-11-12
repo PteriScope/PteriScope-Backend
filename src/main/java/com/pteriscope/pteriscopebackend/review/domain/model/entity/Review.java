@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class Review {
     @Column(columnDefinition = "TEXT")
     private String imageBase64;
     private String reviewResult;
-    private LocalDate reviewDate;
+    private LocalDateTime reviewDate;
 
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)

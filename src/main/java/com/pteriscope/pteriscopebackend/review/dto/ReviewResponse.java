@@ -2,12 +2,13 @@ package com.pteriscope.pteriscopebackend.review.dto;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ReviewResponse {
     private Long id;
     private String imageBase64;
     private String reviewResult;
-    private LocalDate reviewDate;
+    private LocalDateTime reviewDate;
     private Long patientId;
 
     public Long getId() {
@@ -34,11 +35,11 @@ public class ReviewResponse {
         this.reviewResult = reviewResult;
     }
 
-    public LocalDate getReviewDate() {
+    public LocalDateTime getReviewDate() {
         return reviewDate;
     }
 
-    public void setReviewDate(LocalDate reviewDate) {
+    public void setReviewDate(LocalDateTime reviewDate) {
         this.reviewDate = reviewDate;
     }
 
