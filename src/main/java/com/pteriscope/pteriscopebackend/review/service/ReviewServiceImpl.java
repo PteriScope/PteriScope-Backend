@@ -20,8 +20,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +49,19 @@ public class ReviewServiceImpl implements ReviewService {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if (patient.isPresent()) {
             Review review = new Review();
-            review.setImageBase64(imageBase64);
-            review.setPatient(patient.get());
-            review.setReviewDate(LocalDateTime.now());
 
             // Process image with ECS
             String reviewResult = analyzeImage(imageBase64);
             String prediction = castPredictionToClass(reviewResult);
+
+            // Resize image
+            String resizedImage = resizeImage(imageBase64);
+            log.info(String.format("resized Image: %s", resizedImage));
+
+            // Create review info
+            review.setImageBase64(resizedImage);
+            review.setPatient(patient.get());
+            review.setReviewDate(LocalDateTime.now());
             review.setReviewResult(prediction);
             Review savedReview = reviewRepository.save(review);
 
@@ -62,6 +75,35 @@ public class ReviewServiceImpl implements ReviewService {
         else{
             throw new CustomException(HttpStatus.BAD_REQUEST, "Patient with ID " + patientId + " does not exist");
         }
+    }
+
+    String resizeImage(String base64Image) throws IOException {
+        BufferedImage originalImage = decodeBase64Image(base64Image);
+        int newWidth = 240;
+        int newHeight = 135;
+        BufferedImage resizedImage = resizeBufferedImage(originalImage, newWidth, newHeight);
+
+        return encodeImageToBase64(resizedImage);
+    }
+
+    private BufferedImage decodeBase64Image(String base64Image) throws IOException {
+        byte[] imageBytes = Base64.getDecoder().decode(base64Image);
+        return ImageIO.read(new ByteArrayInputStream(imageBytes));
+    }
+
+    private BufferedImage resizeBufferedImage(BufferedImage originalImage, int newWidth, int newHeight) {
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, originalImage.getType());
+        Graphics2D g = resizedImage.createGraphics();
+        g.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+        g.dispose();
+        return resizedImage;
+    }
+
+    private String encodeImageToBase64(BufferedImage image) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpeg", baos);
+        byte[] imageBytes = baos.toByteArray();
+        return Base64.getEncoder().encodeToString(imageBytes);
     }
 
     private String analyzeImage(String base64Image) throws Exception {
