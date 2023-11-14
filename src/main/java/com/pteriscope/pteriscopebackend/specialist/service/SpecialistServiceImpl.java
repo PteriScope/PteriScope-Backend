@@ -53,7 +53,7 @@ public class SpecialistServiceImpl implements SpecialistService {
             throw new CustomException(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese DNI");
 
         Specialist specialist = new Specialist(
-                registerUser.nombre,
+                registerUser.name,
                 registerUser.dni,
                 passwordEncoder.encode(registerUser.password),
                 registerUser.hospital,

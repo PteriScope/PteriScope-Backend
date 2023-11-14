@@ -21,15 +21,11 @@ public class ReviewController {
     @PostMapping("/reviews")
     public ResponseEntity<ReviewResponse> createReview(@RequestBody Map<String, String> requestBody, @RequestParam Long patientId) throws Exception {
         String imageBase64 = requestBody.get("imageBase64");
-        log.info("==================================================================");
-        log.info(String.format("Solicitud llegada a CreateReview con request: %s, y patientId: %s", imageBase64, patientId));
         return ResponseEntity.ok(reviewService.createReview(patientId, imageBase64));
     }
 
     @GetMapping("/reviews/{reviewId}")
     public ResponseEntity<ReviewResponse> getReview(@PathVariable Long reviewId) {
-        log.info("==================================================================");
-        log.info(String.format("Solicitud llegada a CreateReview con reviewId: %s", reviewId));
         return ResponseEntity.ok(reviewService.getReview(reviewId));
     }
 

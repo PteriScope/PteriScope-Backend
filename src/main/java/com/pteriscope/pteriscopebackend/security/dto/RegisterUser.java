@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class RegisterUser {
     @NotBlank(message = "Nombre obligatorio")
-    public String nombre;
+    public String name;
     @NotBlank(message = "DNI obligatorio")
     public String dni;
     @NotBlank(message = "Contraseña obligatoria")
