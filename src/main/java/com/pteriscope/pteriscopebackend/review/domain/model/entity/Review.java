@@ -1,11 +1,9 @@
 package com.pteriscope.pteriscopebackend.review.domain.model.entity;
 
 import com.pteriscope.pteriscopebackend.patient.domain.model.entity.Patient;
-import com.pteriscope.pteriscopebackend.specialist.domain.model.entity.Specialist;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

@@ -4,7 +4,6 @@ import com.pteriscope.pteriscopebackend.patient.domain.model.entity.Patient;
 import com.pteriscope.pteriscopebackend.patient.dto.PatientResponse;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface PatientService {
     public PatientResponse createPatient(Long specialistId, Patient patient);

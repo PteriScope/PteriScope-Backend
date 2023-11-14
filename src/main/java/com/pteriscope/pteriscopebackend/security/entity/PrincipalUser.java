@@ -1,6 +1,7 @@
 package com.pteriscope.pteriscopebackend.security.entity;
 
 import com.pteriscope.pteriscopebackend.specialist.domain.model.entity.Specialist;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,13 +10,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 public class PrincipalUser implements UserDetails {
-    private String name;
-    private String dni;
-    private String password;
-    private String hospital;
-    private String position;
-    private Collection<? extends GrantedAuthority> authorities;
+    private final String name;
+    private final String dni;
+    private final String password;
+    private final String hospital;
+    private final String position;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public PrincipalUser(String name, String dni, String password, String hospital, String position, Collection<? extends GrantedAuthority> authorities) {
         this.name = name;
@@ -68,11 +70,11 @@ public class PrincipalUser implements UserDetails {
         return true;
     }
 
-    public String getName() {
+    public String name() {
         return name;
     }
 
-    public String getDni() {
+    public String dni() {
         return dni;
     }
 }

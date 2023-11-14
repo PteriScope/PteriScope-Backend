@@ -3,8 +3,10 @@ package com.pteriscope.pteriscopebackend.security.entity;
 import com.pteriscope.pteriscopebackend.security.enums.RolName;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
 
 
+@Getter
 @Entity
 public class Rol {
     @Id
@@ -21,16 +23,8 @@ public class Rol {
         this.rolName = rolName;
     }
 
-    public int getId() {
-        return id;
-    }
-
     public void setId(int id) {
         this.id = id;
-    }
-
-    public RolName getRolName() {
-        return rolName;
     }
 
     public void setRolName(RolName rolName) {

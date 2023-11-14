@@ -1,23 +1,15 @@
 package com.pteriscope.pteriscopebackend.security.dto;
 
-public class JwtDto {
-    private Long id;
-    private String token;
+import lombok.Getter;
 
-    public JwtDto() {
-    }
+@Getter
+public class JwtDto {
+    private final Long id;
+    private String token;
 
     public JwtDto(String token, Long id) {
         this.token = token;
         this.id = id;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public void setToken(String token) {

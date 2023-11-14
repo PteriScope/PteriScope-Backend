@@ -1,8 +1,6 @@
 package com.pteriscope.pteriscopebackend.specialist.service;
 
 import com.pteriscope.pteriscopebackend.exception.CustomException;
-import com.pteriscope.pteriscopebackend.patient.domain.model.entity.Patient;
-import com.pteriscope.pteriscopebackend.patient.dto.PatientResponse;
 import com.pteriscope.pteriscopebackend.security.dto.JwtDto;
 import com.pteriscope.pteriscopebackend.security.dto.LoginUser;
 import com.pteriscope.pteriscopebackend.security.dto.RegisterUser;
@@ -16,18 +14,13 @@ import com.pteriscope.pteriscopebackend.specialist.domain.services.SpecialistSer
 import com.pteriscope.pteriscopebackend.specialist.dto.SpecialistResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -70,10 +63,10 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public JwtDto login(LoginUser loginUser){
-        Specialist specialist = specialistRepository.findByDni(loginUser.getDNI())
+        Specialist specialist = specialistRepository.findByDni(loginUser.getDni())
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
         Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getDNI(), loginUser.getPassword()));
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getDni(), loginUser.getPassword()));
         //SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateToken(authentication);
         return new JwtDto(jwt, specialist.getId());
