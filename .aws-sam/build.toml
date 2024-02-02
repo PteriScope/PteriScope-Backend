@@ -4,7 +4,7 @@
 codeuri = "D:\\UPC\\Tesis\\Repositories\\pteriscope-backend\\pteriscope-backend"
 runtime = "java17"
 architecture = "x86_64"
-handler = "com.pteriscope.pteriscopebackend.lambda.StreamLambdaHandler::handleRequest"
+handler = "com.pteriscope.webservice.lambda.StreamLambdaHandler::handleRequest"
 manifest_hash = ""
 packagetype = "Zip"
 functions = ["ProductFunction"]
