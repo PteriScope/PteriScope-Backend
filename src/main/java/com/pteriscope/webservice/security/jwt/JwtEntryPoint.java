@@ -28,5 +28,4 @@ public class JwtEntryPoint implements AuthenticationEntryPoint {
         res.getWriter().flush();
         res.getWriter().close();
     }
-
 }
