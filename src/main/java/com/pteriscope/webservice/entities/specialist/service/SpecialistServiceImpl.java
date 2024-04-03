@@ -88,4 +88,9 @@ public class SpecialistServiceImpl implements SpecialistService {
         return specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
     }
+
+    @Override
+    public Boolean checkShowAdviceValue(Long specialistId) {
+        return null;
+    }
 }

@@ -13,4 +13,6 @@ public interface SpecialistService {
     Specialist updateSpecialist(Specialist updatedSpecialist, Long id);
 
     Specialist getSpecialist(Long specialistId);
+
+    Boolean checkShowAdviceValue(Long specialistId);
 }

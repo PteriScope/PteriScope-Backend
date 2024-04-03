@@ -121,6 +121,7 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    // TODO: Update class order according the retrained model
     private String castPredictionToClass(String reviewResult){
         return switch (reviewResult) {
             case "0" -> PterygiumClass.SEVERE_PTERYGIUM;

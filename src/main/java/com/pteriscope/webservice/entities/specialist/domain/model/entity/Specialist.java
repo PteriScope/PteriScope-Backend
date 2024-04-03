@@ -40,6 +40,8 @@ public class Specialist {
     @NotNull
     private String position;
 
+    private Boolean showAdvice;
+
     @JsonIgnore
     @OneToMany(mappedBy = "specialist", cascade = CascadeType.ALL)
     private List<Patient> patients;

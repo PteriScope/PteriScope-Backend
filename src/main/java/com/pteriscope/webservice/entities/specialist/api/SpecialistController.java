@@ -27,13 +27,18 @@ public class SpecialistController {
         return ResponseEntity.ok(specialistService.login(loginUser));
     }
 
-    @GetMapping("/get/{specialistId}")
+    @GetMapping("/{specialistId}")
     public ResponseEntity<Specialist> getSpecialist(@PathVariable Long specialistId) {
         return ResponseEntity.ok(specialistService.getSpecialist(specialistId));
     }
 
-    @PutMapping("/update/{specialistId}")
+    @PutMapping("/{specialistId}")
     public ResponseEntity<Specialist> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
         return ResponseEntity.ok(specialistService.updateSpecialist(updatedSpecialist, specialistId));
+    }
+
+    @GetMapping("/{specialistId}/showAdvice")
+    public ResponseEntity<Boolean> checkShowAdvice(@PathVariable Long specialistId) {
+        return ResponseEntity.ok(specialistService.checkShowAdviceValue(specialistId));
     }
 }
