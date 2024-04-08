@@ -5,12 +5,14 @@ import com.pteriscope.webservice.security.dto.LoginUser;
 import com.pteriscope.webservice.security.dto.RegisterUser;
 import com.pteriscope.webservice.entities.specialist.domain.model.entity.Specialist;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface SpecialistService {
-    String registerSpecialist(RegisterUser registerUser);
+    CompletableFuture<String> registerSpecialist(RegisterUser registerUser);
 
-    JwtDto login(LoginUser loginUser);
+    CompletableFuture<JwtDto> login(LoginUser loginUser);
 
-    Specialist updateSpecialist(Specialist updatedSpecialist, Long id);
+    CompletableFuture<Specialist> updateSpecialist(Specialist updatedSpecialist, Long id);
 
-    Specialist getSpecialist(Long specialistId);
+    CompletableFuture<Specialist> getSpecialist(Long specialistId);
 }

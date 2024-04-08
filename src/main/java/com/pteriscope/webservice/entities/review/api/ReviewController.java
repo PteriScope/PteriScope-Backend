@@ -9,24 +9,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @RestController
 @RequestMapping("/api")
+@CrossOrigin
 public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
 
     @PostMapping("/reviews")
-    public ResponseEntity<Review> createReview(@RequestBody Map<String, String> requestBody, @RequestParam Long patientId) throws Exception {
+    public CompletableFuture<ResponseEntity<Review>> createReview(@RequestBody Map<String, String> requestBody, @RequestParam Long patientId) throws Exception {
         String imageBase64 = requestBody.get("imageBase64");
-        return ResponseEntity.ok(reviewService.createReview(patientId, imageBase64));
+        return reviewService.createReview(patientId, imageBase64)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/reviews/{reviewId}")
-    public ResponseEntity<Review> getReview(@PathVariable Long reviewId) {
-        return ResponseEntity.ok(reviewService.getReview(reviewId));
+    public CompletableFuture<ResponseEntity<Review>> getReview(@PathVariable Long reviewId) {
+        return reviewService.getReview(reviewId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/patients/{patientId}/reviews")

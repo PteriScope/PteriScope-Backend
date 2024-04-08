@@ -8,10 +8,12 @@ import com.pteriscope.webservice.entities.specialist.domain.model.entity.Special
 import com.pteriscope.webservice.entities.specialist.domain.persistence.SpecialistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PatientServiceImpl implements PatientService {
@@ -22,12 +24,13 @@ public class PatientServiceImpl implements PatientService {
     private SpecialistRepository specialistRepository;
 
     @Override
-    public Patient createPatient(Long specialistId, Patient patient) {
+    @Async
+    public CompletableFuture<Patient> createPatient(Long specialistId, Patient patient) {
         Optional<Specialist> specialist = specialistRepository.findById(specialistId);
         if (specialist.isPresent()) {
             patient.setSpecialist(specialist.get());
 
-            return patientRepository.save(patient);
+            return CompletableFuture.completedFuture(patientRepository.save(patient));
         }
         else{
             throw new CustomException(HttpStatus.BAD_REQUEST, "Specialist with ID " + specialistId + " does not exist");
@@ -35,30 +38,34 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient getPatient(Long patientId) {
-        return patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+    @Async
+    public CompletableFuture<Patient> getPatient(Long patientId) {
+        return CompletableFuture.completedFuture(patientRepository.findById(patientId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found")));
     }
 
     @Override
-    public List<Patient> getPatientFromSpecialist(Long specialistId) {
+    @Async
+    public CompletableFuture<List<Patient>> getPatientFromSpecialist(Long specialistId) {
         Specialist specialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
-        return patientRepository.getPatientsBySpecialist(specialist);
+        return CompletableFuture.completedFuture(patientRepository.getPatientsBySpecialist(specialist));
     }
 
     @Override
-    public Patient updatePatient(Long patientId, Patient updatedPatient) {
+    @Async
+    public CompletableFuture<Patient> updatePatient(Long patientId, Patient updatedPatient) {
         Patient existingPatient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
 
         existingPatient.setFirstName(updatedPatient.getFirstName());
         existingPatient.setLastName(updatedPatient.getLastName());
 
-        return patientRepository.save(existingPatient);
+        return CompletableFuture.completedFuture(patientRepository.save(existingPatient));
     }
 
     @Override
+    @Async
     public void deletePatient(Long patientId) {
         patientRepository.findById(patientId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));

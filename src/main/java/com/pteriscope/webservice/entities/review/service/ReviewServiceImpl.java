@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Service
@@ -39,8 +41,11 @@ public class ReviewServiceImpl implements ReviewService {
     @Value("${api.gateway.url}")
     private String apiGatewayUrl;
 
+    private static final String PATIENT_NOT_FOUND_MSG = "Patient not found";
+
     @Override
-    public Review createReview(Long patientId, String imageBase64) throws Exception {
+    @Async
+    public CompletableFuture<Review> createReview(Long patientId, String imageBase64) throws Exception {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if (patient.isPresent()) {
             Review review = new Review();
@@ -65,14 +70,14 @@ public class ReviewServiceImpl implements ReviewService {
             patient.get().setLastReviewDate(review.getReviewDate());
             patientRepository.save(patient.get());
 
-            return savedReview;
+            return CompletableFuture.completedFuture(savedReview);
         }
         else{
             throw new CustomException(HttpStatus.BAD_REQUEST, "Patient with ID " + patientId + " does not exist");
         }
     }
 
-    String resizeImage(String base64Image) throws IOException {
+    private String resizeImage(String base64Image) throws IOException {
         BufferedImage originalImage = decodeBase64Image(base64Image);
         int newWidth = 240;
         int newHeight = 135;
@@ -131,22 +136,23 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review getReview(Long reviewId) {
+    @Async
+    public CompletableFuture<Review> getReview(Long reviewId) {
         log.info("==================================================================");
         log.info(String.format("reviewId: %s", reviewId));
         Review storedPatient = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, PATIENT_NOT_FOUND_MSG));
 
         log.info("==================================================================");
         log.info(String.format("Response: %s", reviewId));
-        return storedPatient;
+        return CompletableFuture.completedFuture(storedPatient);
     }
 
     @Transactional
     @Override
     public List<Review> getAllReviewsFromPatient(Long patientId) {
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, PATIENT_NOT_FOUND_MSG));
         return reviewRepository.getReviewsByPatientOrderByReviewDateDesc(patient);
     }
 
@@ -154,7 +160,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review getLatestReviewFromPatient(Long patientId){
         Patient storedPatient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, PATIENT_NOT_FOUND_MSG));
 
 
         Optional<Review> latestReview = reviewRepository.findFirstByPatientOrderByReviewDateDesc(storedPatient);

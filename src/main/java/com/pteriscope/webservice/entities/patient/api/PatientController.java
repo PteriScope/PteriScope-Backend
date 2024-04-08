@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api")
@@ -17,23 +18,31 @@ public class PatientController {
     private PatientService patientService;
 
     @PostMapping("/specialists/createPatient/{specialistId}")
-    public ResponseEntity<Patient> createPatient(@RequestBody Patient patient, @PathVariable Long specialistId) {
-        return ResponseEntity.ok(patientService.createPatient(specialistId, patient));
+    public CompletableFuture<ResponseEntity<Patient>> createPatient(@RequestBody Patient patient, @PathVariable Long specialistId) {
+        return patientService.createPatient(specialistId, patient)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/patients/get/{patientId}")
-    public ResponseEntity<Patient> getPatient(@PathVariable Long patientId) {
-        return ResponseEntity.ok(patientService.getPatient(patientId));
+    public CompletableFuture<ResponseEntity<Patient>> getPatient(@PathVariable Long patientId) {
+        return patientService.getPatient(patientId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/specialists/{specialistId}/patients")
-    public ResponseEntity<List<Patient>> getPatientFromSpecialist(@PathVariable Long specialistId) {
-        return ResponseEntity.ok(patientService.getPatientFromSpecialist(specialistId));
+    public CompletableFuture<ResponseEntity<List<Patient>>> getPatientFromSpecialist(@PathVariable Long specialistId) {
+        return patientService.getPatientFromSpecialist(specialistId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/patients/update/{patientId}")
-    public ResponseEntity<Patient> updatePatient(@PathVariable Long patientId, @RequestBody Patient updatedPatient) {
-        return ResponseEntity.ok(patientService.updatePatient(patientId, updatedPatient));
+    public CompletableFuture<ResponseEntity<Patient>> updatePatient(@PathVariable Long patientId, @RequestBody Patient updatedPatient) {
+        return patientService.updatePatient(patientId, updatedPatient)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @DeleteMapping("/patients/delete/{patientId}")

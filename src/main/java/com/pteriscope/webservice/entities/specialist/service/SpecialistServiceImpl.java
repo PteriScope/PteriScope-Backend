@@ -13,6 +13,7 @@ import com.pteriscope.webservice.security.service.RolService;
 import com.pteriscope.webservice.entities.specialist.domain.model.entity.Specialist;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class SpecialistServiceImpl implements SpecialistService {
@@ -40,7 +42,8 @@ public class SpecialistServiceImpl implements SpecialistService {
     RolService rolService;
 
     @Override
-    public String registerSpecialist(RegisterUser registerUser) {
+    @Async
+    public CompletableFuture<String> registerSpecialist(RegisterUser registerUser) {
         if(specialistRepository.existsByDni(registerUser.dni))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese DNI");
 
@@ -57,22 +60,24 @@ public class SpecialistServiceImpl implements SpecialistService {
         roles.add(rolService.getByRolName(RolName.ROLE_ADMIN));
         specialist.setRoles(roles);
         specialistRepository.save(specialist);
-        return specialist.getName() + "Usuario creado";
+        return CompletableFuture.completedFuture(specialist.getName() + "Usuario creado");
     }
 
     @Override
-    public JwtDto login(LoginUser loginUser){
+    @Async
+    public CompletableFuture<JwtDto> login(LoginUser loginUser){
         Specialist specialist = specialistRepository.findByDni(loginUser.getDni())
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getDni(), loginUser.getPassword()));
         //SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateToken(authentication);
-        return new JwtDto(jwt, specialist.getId());
+        return CompletableFuture.completedFuture(new JwtDto(jwt, specialist.getId()));
     }
 
     @Override
-    public Specialist updateSpecialist(Specialist updatedSpecialist, Long specialistId) {
+    @Async
+    public CompletableFuture<Specialist> updateSpecialist(Specialist updatedSpecialist, Long specialistId) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
 
@@ -80,12 +85,13 @@ public class SpecialistServiceImpl implements SpecialistService {
         existingSpecialist.setHospital(updatedSpecialist.getHospital());
         existingSpecialist.setPosition(updatedSpecialist.getPosition());
 
-        return specialistRepository.save(existingSpecialist);
+        return CompletableFuture.completedFuture(specialistRepository.save(existingSpecialist));
     }
 
     @Override
-    public Specialist getSpecialist(Long specialistId) {
-        return specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+    @Async
+    public CompletableFuture<Specialist> getSpecialist(Long specialistId) {
+        return CompletableFuture.completedFuture(specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found")));
     }
 }

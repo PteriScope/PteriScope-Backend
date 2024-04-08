@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/api/specialists")
 @CrossOrigin
@@ -18,22 +20,30 @@ public class SpecialistController {
     private SpecialistService specialistService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerSpecialist(@RequestBody RegisterUser newUser) {
-        return ResponseEntity.ok(specialistService.registerSpecialist(newUser));
+    public CompletableFuture<ResponseEntity<String>> registerSpecialist(@RequestBody RegisterUser newUser) {
+        return specialistService.registerSpecialist(newUser)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtDto> login(@Valid @RequestBody LoginUser loginUser) {
-        return ResponseEntity.ok(specialistService.login(loginUser));
+    public CompletableFuture<ResponseEntity<JwtDto>> login(@Valid @RequestBody LoginUser loginUser) {
+        return specialistService.login(loginUser)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/get/{specialistId}")
-    public ResponseEntity<Specialist> getSpecialist(@PathVariable Long specialistId) {
-        return ResponseEntity.ok(specialistService.getSpecialist(specialistId));
+    public CompletableFuture<ResponseEntity<Specialist>> getSpecialist(@PathVariable Long specialistId) {
+        return specialistService.getSpecialist(specialistId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 
     @PutMapping("/update/{specialistId}")
-    public ResponseEntity<Specialist> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
-        return ResponseEntity.ok(specialistService.updateSpecialist(updatedSpecialist, specialistId));
+    public CompletableFuture<ResponseEntity<Specialist>> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
+        return specialistService.updateSpecialist(updatedSpecialist, specialistId)
+                .thenApply(ResponseEntity::ok)
+                .exceptionally(ex -> ResponseEntity.badRequest().build());
     }
 }
