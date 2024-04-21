@@ -33,7 +33,7 @@ public class SpecialistController {
     }
 
     @PutMapping("/{specialistId}")
-    public ResponseEntity<Specialist> updateSpecialist(@PathVariable Long specialistId, @RequestBody Specialist updatedSpecialist) {
+    public ResponseEntity<Specialist> updateSpecialist(@PathVariable Long specialistId, @RequestBody RegisterUser updatedSpecialist) {
         return ResponseEntity.ok(specialistService.updateSpecialist(updatedSpecialist, specialistId));
     }
 

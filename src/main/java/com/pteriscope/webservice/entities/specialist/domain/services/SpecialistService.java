@@ -10,7 +10,7 @@ public interface SpecialistService {
 
     JwtDto login(LoginUser loginUser);
 
-    Specialist updateSpecialist(Specialist updatedSpecialist, Long id);
+    Specialist updateSpecialist(RegisterUser updatedSpecialist, Long id);
 
     Specialist getSpecialist(Long specialistId);
 
