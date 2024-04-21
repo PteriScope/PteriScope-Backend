@@ -72,13 +72,14 @@ public class SpecialistServiceImpl implements SpecialistService {
     }
 
     @Override
-    public Specialist updateSpecialist(Specialist updatedSpecialist, Long specialistId) {
+    public Specialist updateSpecialist(RegisterUser updatedSpecialist, Long specialistId) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
 
-        existingSpecialist.setName(updatedSpecialist.getName());
-        existingSpecialist.setHospital(updatedSpecialist.getHospital());
-        existingSpecialist.setPosition(updatedSpecialist.getPosition());
+        existingSpecialist.setName(updatedSpecialist.name);
+        existingSpecialist.setPassword(passwordEncoder.encode(updatedSpecialist.password));
+        existingSpecialist.setHospital(updatedSpecialist.hospital);
+        existingSpecialist.setPosition(updatedSpecialist.position);
 
         return specialistRepository.save(existingSpecialist);
     }
