@@ -15,4 +15,6 @@ public interface SpecialistService {
     Specialist getSpecialist(Long specialistId);
 
     Boolean checkShowAdviceValue(Long specialistId);
+
+    void markDoNotShowAdvice(Long specialistId);
 }

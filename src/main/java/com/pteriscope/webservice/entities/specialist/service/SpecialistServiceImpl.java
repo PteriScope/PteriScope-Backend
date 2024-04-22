@@ -49,7 +49,8 @@ public class SpecialistServiceImpl implements SpecialistService {
                 registerUser.dni,
                 passwordEncoder.encode(registerUser.password),
                 registerUser.hospital,
-                registerUser.position
+                registerUser.position,
+                true
         );
 
         Set<Rol> roles = new HashSet<>();
@@ -92,6 +93,18 @@ public class SpecialistServiceImpl implements SpecialistService {
 
     @Override
     public Boolean checkShowAdviceValue(Long specialistId) {
-        return null;
+        Specialist existingSpecialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+        return existingSpecialist.getShowAdvice();
+    }
+
+    @Override
+    public void markDoNotShowAdvice(Long specialistId) {
+        Specialist existingSpecialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+
+        existingSpecialist.setShowAdvice(false);
+
+        specialistRepository.save(existingSpecialist);
     }
 }

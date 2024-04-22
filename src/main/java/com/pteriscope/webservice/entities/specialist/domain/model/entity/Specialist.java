@@ -40,6 +40,7 @@ public class Specialist {
     @NotNull
     private String position;
 
+    @NotNull
     private Boolean showAdvice;
 
     @JsonIgnore
@@ -54,11 +55,12 @@ public class Specialist {
     private Set<Rol> roles = new HashSet<>();
 
 
-    public Specialist(@NotNull String name, @NotNull String dni, @NotNull String password, @NotNull String hospital, @NotNull String position) {
+    public Specialist(@NotNull String name, @NotNull String dni, @NotNull String password, @NotNull String hospital, @NotNull String position, @NotNull boolean showAdvice) {
         this.name = name;
         this.dni = dni;
         this.password = password;
         this.hospital = hospital;
         this.position = position;
+        this.showAdvice = showAdvice;
     }
 }

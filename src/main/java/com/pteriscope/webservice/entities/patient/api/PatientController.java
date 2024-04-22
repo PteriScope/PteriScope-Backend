@@ -16,12 +16,12 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
-    @PostMapping("/specialists/createPatient/{specialistId}")
+    @PostMapping("/specialists/{specialistId}/createPatient")
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient, @PathVariable Long specialistId) {
         return ResponseEntity.ok(patientService.createPatient(specialistId, patient));
     }
 
-    @GetMapping("/patients/get/{patientId}")
+    @GetMapping("/patients/{patientId}")
     public ResponseEntity<Patient> getPatient(@PathVariable Long patientId) {
         return ResponseEntity.ok(patientService.getPatient(patientId));
     }
@@ -31,12 +31,12 @@ public class PatientController {
         return ResponseEntity.ok(patientService.getPatientFromSpecialist(specialistId));
     }
 
-    @PutMapping("/patients/update/{patientId}")
+    @PutMapping("/patients/{patientId}")
     public ResponseEntity<Patient> updatePatient(@PathVariable Long patientId, @RequestBody Patient updatedPatient) {
         return ResponseEntity.ok(patientService.updatePatient(patientId, updatedPatient));
     }
 
-    @DeleteMapping("/patients/delete/{patientId}")
+    @DeleteMapping("/patients/{patientId}")
     public ResponseEntity<Void> deletePatient(@PathVariable Long patientId) {
         patientService.deletePatient(patientId);
         return ResponseEntity.ok().build();

@@ -9,6 +9,4 @@ import java.util.Optional;
 public interface SpecialistRepository extends JpaRepository<Specialist, Long> {
     Optional<Specialist> findByDni(String dni);
     boolean existsByDni(String dni);
-
-    boolean findIsActiveById(Long id);
 }

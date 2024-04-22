@@ -37,8 +37,14 @@ public class SpecialistController {
         return ResponseEntity.ok(specialistService.updateSpecialist(updatedSpecialist, specialistId));
     }
 
-    @GetMapping("/{specialistId}/showAdvice")
+    @GetMapping("/{specialistId}/checkShowAdvice")
     public ResponseEntity<Boolean> checkShowAdvice(@PathVariable Long specialistId) {
         return ResponseEntity.ok(specialistService.checkShowAdviceValue(specialistId));
+    }
+
+    @PutMapping("/{specialistId}/markDoNotShowAdvice")
+    public ResponseEntity<Void> markDoNotShowAdvice(@PathVariable Long specialistId) {
+        specialistService.markDoNotShowAdvice(specialistId);
+        return ResponseEntity.ok().build();
     }
 }
