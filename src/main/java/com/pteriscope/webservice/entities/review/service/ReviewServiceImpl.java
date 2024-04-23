@@ -173,5 +173,12 @@ public class ReviewServiceImpl implements ReviewService {
             return nullReview;
         }
     }
+
+    @Override
+    public void deleteReview(Long reviewId) {
+        reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Review not found"));
+        reviewRepository.deleteById(reviewId);
+    }
 }
 
