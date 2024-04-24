@@ -35,8 +35,7 @@ public class Patient {
 
     @NotNull
     private Integer age;
-
-    @NotBlank
+    
     private String email;
 
     private String lastReviewResult;
