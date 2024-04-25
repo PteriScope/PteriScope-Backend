@@ -174,11 +174,32 @@ public class ReviewServiceImpl implements ReviewService {
         }
     }
 
+    @Transactional
     @Override
-    public void deleteReview(Long reviewId) {
+    public void deleteReview(Long patientId, Long reviewId) {
+        Patient storedPatient = patientRepository.findById(patientId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+
+        Optional<Review> latestReview = reviewRepository.findFirstByPatientOrderByReviewDateDesc(storedPatient);
+
         reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Review not found"));
+
         reviewRepository.deleteById(reviewId);
+
+        if (latestReview.isPresent() && latestReview.get().getId().equals(reviewId)) {
+            Optional<Review> newLatestReview = reviewRepository.findFirstByPatientOrderByReviewDateDesc(storedPatient);
+
+            if (newLatestReview.isPresent()){
+                storedPatient.setLastReviewResult(newLatestReview.get().getReviewResult());
+                storedPatient.setLastReviewDate(newLatestReview.get().getReviewDate());
+            }
+            else{
+                storedPatient.setLastReviewResult(null);
+                storedPatient.setLastReviewDate(null);
+            }
+            patientRepository.save(storedPatient);
+        }
     }
 }
 

@@ -9,5 +9,5 @@ public interface ReviewService {
     Review getReview(Long id);
     List<Review> getAllReviewsFromPatient(Long patientId);
     Review getLatestReviewFromPatient(Long patientId);
-    void deleteReview(Long reviewId);
+    void deleteReview(Long patientId, Long reviewId);
 }

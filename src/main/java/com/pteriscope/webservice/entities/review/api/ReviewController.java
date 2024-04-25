@@ -39,9 +39,9 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getLatestReviewFromPatient(patientId));
     }
 
-    @DeleteMapping("/reviews/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
-        reviewService.deleteReview(reviewId);
+    @DeleteMapping("/patients/{patientId}/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long patientId, @PathVariable Long reviewId) {
+        reviewService.deleteReview(patientId, reviewId);
         return ResponseEntity.ok().build();
     }
 }
