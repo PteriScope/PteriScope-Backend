@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pteriscope</groupId>
     <artifactId>pteriscope-backend</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
     <name>pteriscope-backend</name>
     <description>pteriscope-backend</description>
