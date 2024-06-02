@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/specialists")
 @CrossOrigin
@@ -46,5 +48,11 @@ public class SpecialistController {
     public ResponseEntity<Void> markDoNotShowAdvice(@PathVariable Long specialistId) {
         specialistService.markDoNotShowAdvice(specialistId);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{specialistId}/validateCurrentPassword")
+    public ResponseEntity<Boolean> validateCurrentPassword(@PathVariable Long specialistId, @RequestBody Map<String, String> password) {
+        String currentPassword = password.get("currentPassword");
+        return ResponseEntity.ok(specialistService.validateCurrentPassword(specialistId, currentPassword));
     }
 }

@@ -17,4 +17,6 @@ public interface SpecialistService {
     Boolean checkShowAdviceValue(Long specialistId);
 
     void markDoNotShowAdvice(Long specialistId);
+
+    Boolean validateCurrentPassword(Long specialistId, String password);
 }

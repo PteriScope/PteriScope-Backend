@@ -107,4 +107,11 @@ public class SpecialistServiceImpl implements SpecialistService {
 
         specialistRepository.save(existingSpecialist);
     }
+
+    @Override
+    public Boolean validateCurrentPassword(Long specialistId, String password) {
+        Specialist existingSpecialist = specialistRepository.findById(specialistId)
+                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+        return passwordEncoder.matches(password, existingSpecialist.getPassword());
+    }
 }
