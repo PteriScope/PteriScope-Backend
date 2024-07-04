@@ -54,7 +54,7 @@ public class PatientServiceImpl implements PatientService {
         Patient existingPatient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
 
-        if(patientRepository.existsByDni(updatedPatient.getDni()))
+        if(patientRepository.existsByDni(updatedPatient.getDni()) && !updatedPatient.getDni().equals(existingPatient.getDni()))
             throw new CustomException(HttpStatus.BAD_REQUEST, "Ya existe un paciente con ese DNI");
 
         existingPatient.setFirstName(updatedPatient.getFirstName());
