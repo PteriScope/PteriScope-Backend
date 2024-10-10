@@ -14,10 +14,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/specialists")
-@CrossOrigin
 public class SpecialistController {
+    private final SpecialistService specialistService;
+
     @Autowired
-    private SpecialistService specialistService;
+    public SpecialistController(SpecialistService specialistService) {
+        this.specialistService = specialistService;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<String> registerSpecialist(@RequestBody RegisterUser newUser) {

@@ -20,13 +20,16 @@ import java.io.IOException;
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final static Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
+    private static final Logger jwtLogger = LoggerFactory.getLogger(JwtTokenFilter.class);
+
+    private final JwtProvider jwtProvider;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Autowired
-    JwtProvider jwtProvider;
-
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
+    public JwtTokenFilter(JwtProvider jwtProvider, UserDetailsServiceImpl userDetailsService) {
+        this.jwtProvider = jwtProvider;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -44,7 +47,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (Exception e){
-            logger.error("fail en el método doFilter " + e.getMessage());
+            jwtLogger.error("fail en el método doFilter {}", e.getMessage());
         }
         filterChain.doFilter(req, res);
     }

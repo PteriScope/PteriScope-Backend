@@ -2,7 +2,7 @@ package com.pteriscope.webservice.entities.specialist.service;
 
 import com.pteriscope.webservice.entities.specialist.domain.persistence.SpecialistRepository;
 import com.pteriscope.webservice.entities.specialist.domain.services.SpecialistService;
-import com.pteriscope.webservice.exception.CustomException;
+import com.pteriscope.webservice.exception.PsRequestException;
 import com.pteriscope.webservice.security.dto.JwtDto;
 import com.pteriscope.webservice.security.dto.LoginUser;
 import com.pteriscope.webservice.security.dto.RegisterUser;
@@ -11,6 +11,7 @@ import com.pteriscope.webservice.security.enums.RolName;
 import com.pteriscope.webservice.security.jwt.JwtProvider;
 import com.pteriscope.webservice.security.service.RolService;
 import com.pteriscope.webservice.entities.specialist.domain.model.entity.Specialist;
+import com.pteriscope.webservice.util.PsConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,25 +25,29 @@ import java.util.Set;
 
 @Service
 public class SpecialistServiceImpl implements SpecialistService {
-    @Autowired
-    private SpecialistRepository specialistRepository;
+    private final SpecialistRepository specialistRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+    private final RolService rolService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    JwtProvider jwtProvider;
-
-    @Autowired
-    RolService rolService;
+    public SpecialistServiceImpl(SpecialistRepository specialistRepository,
+                                 PasswordEncoder passwordEncoder,
+                                 AuthenticationManager authenticationManager,
+                                 JwtProvider jwtProvider,
+                                 RolService rolService) {
+        this.specialistRepository = specialistRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtProvider = jwtProvider;
+        this.rolService = rolService;
+    }
 
     @Override
     public String registerSpecialist(RegisterUser registerUser) {
         if(specialistRepository.existsByDni(registerUser.dni))
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese DNI");
+            throw new PsRequestException(HttpStatus.BAD_REQUEST, "Ya existe un usuario con ese DNI");
 
         Specialist specialist = new Specialist(
                 registerUser.name,
@@ -64,10 +69,9 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public JwtDto login(LoginUser loginUser){
         Specialist specialist = specialistRepository.findByDni(loginUser.getDni())
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
         Authentication authentication =
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginUser.getDni(), loginUser.getPassword()));
-        //SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateToken(authentication);
         return new JwtDto(jwt, specialist.getId());
     }
@@ -75,7 +79,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public Specialist updateSpecialist(RegisterUser updatedSpecialist, Long specialistId) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
 
         existingSpecialist.setName(updatedSpecialist.name);
         existingSpecialist.setPassword(passwordEncoder.encode(updatedSpecialist.password));
@@ -88,20 +92,20 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public Specialist getSpecialist(Long specialistId) {
         return specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
     }
 
     @Override
     public Boolean checkShowAdviceValue(Long specialistId) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
         return existingSpecialist.getShowAdvice();
     }
 
     @Override
     public void markDoNotShowAdvice(Long specialistId) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
 
         existingSpecialist.setShowAdvice(false);
 
@@ -111,7 +115,7 @@ public class SpecialistServiceImpl implements SpecialistService {
     @Override
     public Boolean validateCurrentPassword(Long specialistId, String password) {
         Specialist existingSpecialist = specialistRepository.findById(specialistId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Specialist not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.SPECIALIST_NOT_FOUND));
         return passwordEncoder.matches(password, existingSpecialist.getPassword());
     }
 }

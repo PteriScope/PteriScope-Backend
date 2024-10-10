@@ -1,11 +1,13 @@
 package com.pteriscope.webservice.entities.review.service;
 
-import com.pteriscope.webservice.exception.CustomException;
+import com.pteriscope.webservice.exception.PsImageAnalysisException;
+import com.pteriscope.webservice.exception.PsRequestException;
 import com.pteriscope.webservice.entities.patient.domain.model.entity.Patient;
 import com.pteriscope.webservice.entities.patient.domain.persistence.PatientRepository;
 import com.pteriscope.webservice.entities.review.domain.model.entity.Review;
 import com.pteriscope.webservice.entities.review.domain.persistence.ReviewRepository;
 import com.pteriscope.webservice.entities.review.domain.services.ReviewService;
+import com.pteriscope.webservice.util.PsConstants;
 import com.pteriscope.webservice.util.PterygiumClass;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -31,16 +33,20 @@ import java.util.Optional;
 @Service
 public class ReviewServiceImpl implements ReviewService {
 
+    private final ReviewRepository reviewRepository;
+    private final PatientRepository patientRepository;
+
     @Autowired
-    private ReviewRepository reviewRepository;
-    @Autowired
-    private PatientRepository patientRepository;
+    public ReviewServiceImpl(ReviewRepository reviewRepository, PatientRepository patientRepository) {
+        this.reviewRepository = reviewRepository;
+        this.patientRepository = patientRepository;
+    }
 
     @Value("${api.gateway.url}")
     private String apiGatewayUrl;
 
     @Override
-    public Review createReview(Long patientId, String imageBase64) throws Exception {
+    public Review createReview(Long patientId, String imageBase64) throws IOException {
         Optional<Patient> patient = patientRepository.findById(patientId);
         if (patient.isPresent()) {
             Review review = new Review();
@@ -51,7 +57,6 @@ public class ReviewServiceImpl implements ReviewService {
 
             // Resize image
             String resizedImage = resizeImage(imageBase64);
-            log.info(String.format("resized Image: %s", resizedImage));
 
             // Create review info
             review.setImageBase64(resizedImage);
@@ -68,7 +73,7 @@ public class ReviewServiceImpl implements ReviewService {
             return savedReview;
         }
         else{
-            throw new CustomException(HttpStatus.BAD_REQUEST, "Patient with ID " + patientId + " does not exist");
+            throw new PsRequestException(HttpStatus.BAD_REQUEST, "Patient with ID " + patientId + " does not exist");
         }
     }
 
@@ -101,7 +106,7 @@ public class ReviewServiceImpl implements ReviewService {
         return Base64.getEncoder().encodeToString(imageBytes);
     }
 
-    private String analyzeImage(String base64Image) throws Exception {
+    private String analyzeImage(String base64Image) {
         // Crear la solicitud HTTP
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -117,11 +122,10 @@ public class ReviewServiceImpl implements ReviewService {
             int prediction = responseBody.getInt("prediction");
             return Integer.toString(prediction);  // Convierte la predicción a String y retornala
         } else {
-            throw new Exception("Error al analizar la imagen: " + response.getStatusCode());
+            throw new PsImageAnalysisException("Error al analizar la imagen: " + response.getStatusCode());
         }
     }
 
-    // TODO: Update class order according the retrained model
     private String castPredictionToClass(String reviewResult){
         return switch (reviewResult) {
             case "0" -> PterygiumClass.SEVERE_PTERYGIUM;
@@ -133,21 +137,15 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public Review getReview(Long reviewId) {
-        log.info("==================================================================");
-        log.info(String.format("reviewId: %s", reviewId));
-        Review storedPatient = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
-
-        log.info("==================================================================");
-        log.info(String.format("Response: %s", reviewId));
-        return storedPatient;
+        return reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_NOT_FOUND));
     }
 
     @Transactional
     @Override
     public List<Review> getAllReviewsFromPatient(Long patientId) {
         Patient patient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_NOT_FOUND));
         return reviewRepository.getReviewsByPatientOrderByReviewDateDesc(patient);
     }
 
@@ -155,7 +153,7 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public Review getLatestReviewFromPatient(Long patientId){
         Patient storedPatient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_NOT_FOUND));
 
 
         Optional<Review> latestReview = reviewRepository.findFirstByPatientOrderByReviewDateDesc(storedPatient);
@@ -178,12 +176,13 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public void deleteReview(Long patientId, Long reviewId) {
         Patient storedPatient = patientRepository.findById(patientId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Patient not found"));
+                .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_NOT_FOUND));
 
         Optional<Review> latestReview = reviewRepository.findFirstByPatientOrderByReviewDateDesc(storedPatient);
 
-        reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new CustomException(HttpStatus.BAD_REQUEST, "Review not found"));
+        if (!reviewRepository.existsById(reviewId)) {
+            throw new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.REVIEW_NOT_FOUND);
+        }
 
         reviewRepository.deleteById(reviewId);
 

@@ -23,11 +23,12 @@ import java.security.Key;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.pteriscope.webservice.util.PsConstants.ROLES;
 
 @Component
 public class JwtProvider {
-    private final static Logger logger = LoggerFactory.getLogger(JwtProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(JwtProvider.class);
 
     @Value("${jwt.secret}")
     private String secret;
@@ -37,10 +38,10 @@ public class JwtProvider {
 
     public String generateToken(Authentication authentication) {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
-        List<String> roles = principalUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+        List<String> roles = principalUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return Jwts.builder()
                 .setSubject(principalUser.getUsername())
-                .claim("roles", roles)
+                .claim(ROLES, roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + (1000L * 60L * 60L * expiration)))
                 .signWith(getSecret(secret))
@@ -76,11 +77,11 @@ public class JwtProvider {
             JWT jwt = JWTParser.parse(jwtDto.getToken());
             JWTClaimsSet claims = jwt.getJWTClaimsSet();
             String dni = claims.getSubject();
-            List<String> roles = (List<String>) claims.getClaim("roles");
+            List<String> roles = (List<String>) claims.getClaim(ROLES);
 
             return Jwts.builder()
                     .setSubject(dni)
-                    .claim("roles", roles)
+                    .claim(ROLES, roles)
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(new Date().getTime() + expiration))
                     .signWith(getSecret(secret))

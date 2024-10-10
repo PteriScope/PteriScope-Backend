@@ -10,11 +10,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
 public class PatientController {
 
+    private final PatientService patientService;
+
     @Autowired
-    private PatientService patientService;
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
+    }
 
     @PostMapping("/specialists/{specialistId}/createPatient")
     public ResponseEntity<Patient> createPatient(@RequestBody Patient patient, @PathVariable Long specialistId) {

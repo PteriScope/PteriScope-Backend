@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +16,15 @@ import java.util.Map;
 @RequestMapping("/api")
 public class ReviewController {
 
+    private final ReviewService reviewService;
+
     @Autowired
-    private ReviewService reviewService;
+    public ReviewController(final ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
 
     @PostMapping("/reviews")
-    public ResponseEntity<Review> createReview(@RequestBody Map<String, String> requestBody, @RequestParam Long patientId) throws Exception {
+    public ResponseEntity<Review> createReview(@RequestBody Map<String, String> requestBody, @RequestParam Long patientId) throws IOException {
         String imageBase64 = requestBody.get("imageBase64");
         return ResponseEntity.ok(reviewService.createReview(patientId, imageBase64));
     }

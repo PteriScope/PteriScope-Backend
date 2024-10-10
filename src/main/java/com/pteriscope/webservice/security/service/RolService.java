@@ -11,8 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class RolService {
 
+    private final RolRepository rolRepository;
+
     @Autowired
-    RolRepository rolRepository;
+    public RolService(RolRepository rolRepository) {
+        this.rolRepository = rolRepository;
+    }
 
     public Rol getByRolName(RolName rolName){
         return rolRepository.findByRolName(rolName);

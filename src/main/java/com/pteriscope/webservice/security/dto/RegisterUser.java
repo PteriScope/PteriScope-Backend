@@ -2,9 +2,6 @@ package com.pteriscope.webservice.security.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class RegisterUser {
     @NotBlank(message = "Nombre obligatorio")
     public String name;
@@ -16,5 +13,4 @@ public class RegisterUser {
     public String hospital;
     @NotBlank(message = "Nombre del cargo obligatorio")
     public String position;
-    public Set<String> roles = new HashSet<>();
 }

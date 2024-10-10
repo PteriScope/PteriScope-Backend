@@ -2,7 +2,6 @@ package com.pteriscope.webservice.entities.patient.domain.persistence;
 
 import com.pteriscope.webservice.entities.patient.domain.model.entity.Patient;
 import com.pteriscope.webservice.entities.specialist.domain.model.entity.Specialist;
-import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

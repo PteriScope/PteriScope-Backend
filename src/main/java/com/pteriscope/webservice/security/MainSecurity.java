@@ -22,18 +22,21 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class MainSecurity {
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final JwtEntryPoint jwtEntryPoint;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenFilter jwtTokenFilter;
 
     @Autowired
-    UserDetailsServiceImpl userDetailsServiceImpl;
-
-    @Autowired
-    JwtEntryPoint jwtEntryPoint;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtTokenFilter jwtTokenFilter;
+    public MainSecurity(UserDetailsServiceImpl userDetailsServiceImpl,
+                        JwtEntryPoint jwtEntryPoint,
+                        PasswordEncoder passwordEncoder,
+                        JwtTokenFilter jwtTokenFilter) {
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
+        this.jwtEntryPoint = jwtEntryPoint;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtTokenFilter = jwtTokenFilter;
+    }
 
     AuthenticationManager authenticationManager;
 
@@ -43,7 +46,6 @@ public class MainSecurity {
         builder.userDetailsService(userDetailsServiceImpl).passwordEncoder(passwordEncoder);
         authenticationManager = builder.build();
         http.authenticationManager(authenticationManager);
-
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults());
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
