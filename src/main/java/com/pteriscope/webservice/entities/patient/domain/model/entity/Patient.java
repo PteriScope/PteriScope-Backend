@@ -55,4 +55,12 @@ public class Patient {
     @JsonIgnore
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private Set<Review> reviews;
+
+    public Patient(String firstName, String lastName, String dni, int age, Specialist specialist) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.dni = dni;
+        this.age = age;
+        this.specialist = specialist;
+    }
 }
