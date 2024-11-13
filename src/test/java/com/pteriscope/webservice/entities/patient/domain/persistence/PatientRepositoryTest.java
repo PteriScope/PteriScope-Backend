@@ -50,7 +50,7 @@ class PatientRepositoryTest {
     void getPatientsBySpecialist() {
         List<Patient> patients = patientRepository.getPatientsBySpecialist(specialist);
         assertEquals(1, patients.size());
-        assertEquals(patientFirstName, patients.get(0).getFirstName());
+        assertEquals(patientFirstName, patients.getFirst().getFirstName());
     }
 
     @Test

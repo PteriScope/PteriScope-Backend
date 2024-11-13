@@ -16,7 +16,4 @@ public class Rol {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private RolName rolName;
-
-    public Rol() {
-    }
 }
