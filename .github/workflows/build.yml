@@ -41,4 +41,4 @@ jobs:
           PTERISCOPE_FLASK_PRIVATE_IP: "127.0.0.1"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PteriScope_PteriScope-Backend -Dspring.profiles.active=github
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=PteriScope_PteriScope-Backend -Dspring.profiles.active=github -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
