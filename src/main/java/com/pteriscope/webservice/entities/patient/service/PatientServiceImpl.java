@@ -31,7 +31,7 @@ public class PatientServiceImpl implements PatientService {
         Optional<Specialist> specialist = specialistRepository.findById(specialistId);
         if (specialist.isPresent()) {
             if(patientRepository.existsByDni(patient.getDni()))
-                throw new PsRequestException(HttpStatus.BAD_REQUEST, "Ya existe un paciente con ese DNI");
+                throw new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_DNI_ALREADY_REGISTERED);
 
             patient.setSpecialist(specialist.get());
             return patientRepository.save(patient);
@@ -60,7 +60,7 @@ public class PatientServiceImpl implements PatientService {
                 .orElseThrow(() -> new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_NOT_FOUND));
 
         if(patientRepository.existsByDni(updatedPatient.getDni()) && !updatedPatient.getDni().equals(existingPatient.getDni()))
-            throw new PsRequestException(HttpStatus.BAD_REQUEST, "Ya existe un paciente con ese DNI");
+            throw new PsRequestException(HttpStatus.BAD_REQUEST, PsConstants.PATIENT_DNI_ALREADY_REGISTERED);
 
         existingPatient.setFirstName(updatedPatient.getFirstName());
         existingPatient.setLastName(updatedPatient.getLastName());
