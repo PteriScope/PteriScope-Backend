@@ -77,12 +77,6 @@ class PatientServiceImplTest {
 
     @Test
     void createPatient_duplicateDni() {
-        Specialist specialist = new Specialist();
-        specialist.setId(specialistId);
-
-        Patient patient = new Patient();
-        patient.setDni(patientDni);
-
         Mockito.when(specialistRepository.findById(specialistId)).thenReturn(Optional.of(specialist));
         Mockito.when(patientRepository.existsByDni(patientDni)).thenReturn(true);
 
@@ -252,7 +246,7 @@ class PatientServiceImplTest {
 
         assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
         assertEquals(PsConstants.PATIENT_NOT_FOUND, exception.getMessage());
-        
+
         Mockito.verify(patientRepository, Mockito.times(1)).existsById(patientId);
         Mockito.verify(patientRepository, Mockito.never()).deleteById(patientId);
     }

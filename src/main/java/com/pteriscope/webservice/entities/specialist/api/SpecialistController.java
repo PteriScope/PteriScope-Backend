@@ -58,4 +58,10 @@ public class SpecialistController {
         String currentPassword = password.get("currentPassword");
         return ResponseEntity.ok(specialistService.validateCurrentPassword(specialistId, currentPassword));
     }
+
+    @DeleteMapping("/{specialistId}/delete")
+    public ResponseEntity<Void> deleteSpecialist(@PathVariable Long specialistId) {
+        specialistService.deleteSpecialist(specialistId);
+        return ResponseEntity.ok().build();
+    }
 }

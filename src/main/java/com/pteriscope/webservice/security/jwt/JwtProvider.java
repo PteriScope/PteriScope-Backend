@@ -5,10 +5,7 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.pteriscope.webservice.security.dto.JwtDto;
 import com.pteriscope.webservice.security.entity.PrincipalUser;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
@@ -19,7 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -40,21 +37,30 @@ public class JwtProvider {
         PrincipalUser principalUser = (PrincipalUser) authentication.getPrincipal();
         List<String> roles = principalUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
         return Jwts.builder()
-                .setSubject(principalUser.getUsername())
+                .subject(principalUser.getUsername())
                 .claim(ROLES, roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + (1000L * 60L * 60L * expiration)))
+                .issuedAt(new Date())
+                .expiration(new Date(new Date().getTime() + (1000L * 60L * 60L * expiration)))
                 .signWith(getSecret(secret))
                 .compact();
     }
 
-    public String getUserNameFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(token).getBody().getSubject();
+    public String getUserDNIFromToken(String token) {
+        Claims claims = (Claims) Jwts.parser()
+                .verifyWith(getSecret(secret))
+                .build()
+                .parse(token)
+                .getPayload();
+
+        return claims.getSubject();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(token);
+            Jwts.parser()
+                    .verifyWith(getSecret(secret))
+                    .build()
+                    .parse(token);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("token mal formado");
@@ -72,7 +78,10 @@ public class JwtProvider {
 
     public String refreshToken(JwtDto jwtDto) throws ParseException {
         try {
-            Jwts.parserBuilder().setSigningKey(getSecret(secret)).build().parseClaimsJws(jwtDto.getToken());
+            Jwts.parser()
+                    .verifyWith(getSecret(secret))
+                    .build()
+                    .parse(jwtDto.getToken());
         } catch (ExpiredJwtException e) {
             JWT jwt = JWTParser.parse(jwtDto.getToken());
             JWTClaimsSet claims = jwt.getJWTClaimsSet();
@@ -80,17 +89,17 @@ public class JwtProvider {
             List<String> roles = (List<String>) claims.getClaim(ROLES);
 
             return Jwts.builder()
-                    .setSubject(dni)
+                    .subject(dni)
                     .claim(ROLES, roles)
-                    .setIssuedAt(new Date())
-                    .setExpiration(new Date(new Date().getTime() + expiration))
+                    .issuedAt(new Date())
+                    .expiration(new Date(new Date().getTime() + expiration))
                     .signWith(getSecret(secret))
                     .compact();
         }
         return null;
     }
 
-    private Key getSecret(String secret){
+    private SecretKey getSecret(String secret){
         byte[] secretBytes = Decoders.BASE64URL.decode(secret);
         return Keys.hmacShaKeyFor(secretBytes);
     }

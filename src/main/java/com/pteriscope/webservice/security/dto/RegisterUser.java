@@ -1,16 +1,24 @@
 package com.pteriscope.webservice.security.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RegisterUser {
     @NotBlank(message = "Nombre obligatorio")
-    public String name;
+    private String name;
     @NotBlank(message = "DNI obligatorio")
-    public String dni;
+    private String dni;
     @NotBlank(message = "Contraseña obligatoria")
-    public String password;
+    private String password;
     @NotBlank(message = "Nombre de hostipal obligatorio")
-    public String hospital;
+    private String hospital;
     @NotBlank(message = "Nombre del cargo obligatorio")
-    public String position;
+    private String position;
 }

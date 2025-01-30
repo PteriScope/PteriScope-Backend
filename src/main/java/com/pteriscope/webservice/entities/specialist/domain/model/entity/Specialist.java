@@ -44,10 +44,6 @@ public class Specialist {
     private Boolean showAdvice;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "specialist", cascade = CascadeType.ALL)
-    private List<Patient> patients;
-
-    @JsonIgnore
     @NotNull
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_rol", joinColumns = @JoinColumn(name = "specialist_id"),
